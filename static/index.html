@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polio (AFP) Awareness Q&A</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .document-card {
+            transition: transform 0.2s;
+        }
+        .document-card:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-blue-600 text-white py-6">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-bold">Polio (AFP) Awareness Q&A</h1>
+            <p class="mt-2 text-lg">Ask questions about Polio and Acute Flaccid Paralysis to get accurate, helpful answers.</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 flex-grow">
+        <!-- Query Input Section -->
+        <section class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Ask a Question</h2>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <input 
+                    type="text" 
+                    id="queryInput" 
+                    placeholder="E.g., What are the main AFP surveillance quality indicators?" 
+                    class="flex-grow p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                <button 
+                    id="submitButton" 
+                    class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                    Submit
+                </button>
+            </div>
+            <div id="errorMessage" class="text-red-500 mt-2 hidden"></div>
+        </section>
+
+        <!-- Loading Indicator -->
+        <div id="loading" class="hidden text-center">
+            <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-600"></div>
+            <p class="mt-2 text-gray-600">Processing your question...</p>
+        </div>
+
+        <!-- Response Section -->
+        <section id="responseSection" class="hidden bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-xl font-semibold mb-4">Answer</h2>
+            <p id="responseText" class="text-gray-700"></p>
+        </section>
+
+        <!-- Retrieved Documents Section -->
+        <section id="documentsSection" class="hidden">
+            <h2 class="text-xl font-semibold mb-4">Retrieved Information</h2>
+            <div id="documentsList" class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"></div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-4">
+        <div class="container mx-auto px-4 text-center">
+            <p>© 2025 Polio Awareness Platform. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const queryInput = document.getElementById('queryInput');
+        const submitButton = document.getElementById('submitButton');
+        const errorMessage = document.getElementById('errorMessage');
+        const loading = document.getElementById('loading');
+        const responseSection = document.getElementById('responseSection');
+        const responseText = document.getElementById('responseText');
+        const documentsSection = document.getElementById('documentsSection');
+        const documentsList = document.getElementById('documentsList');
+
+        submitButton.addEventListener('click', async () => {
+            const query = queryInput.value.trim();
+            if (!query) {
+                showError('Please enter a question.');
+                return;
+            }
+
+            // Show loading indicator
+            loading.classList.remove('hidden');
+            responseSection.classList.add('hidden');
+            documentsSection.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+
+            try {
+                const response = await fetch('/rag_query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to fetch response from server.');
+                }
+
+                const data = await response.json();
+
+                // Display response
+                responseText.textContent = data.response || 'No response generated.';
+                responseSection.classList.remove('hidden');
+                responseSection.classList.add('fade-in');
+
+                // Display retrieved documents
+                if (data.retrieved_documents && data.retrieved_metadatas) {
+                    documentsList.innerHTML = '';
+                    data.retrieved_documents.forEach((doc, index) => {
+                        const meta = data.retrieved_metadatas[index];
+                        const docElement = document.createElement('div');
+                        docElement.className = 'document-card bg-gray-50 p-4 rounded-lg shadow-sm border border-gray-200';
+                        docElement.innerHTML = `
+                            <h3 class="text-lg font-medium text-gray-800">${meta.source} (Chunk ${meta.chunk_index})</h3>
+                            <p class="text-gray-600 mt-2">${doc.substring(0, 200)}...</p>
+                        `;
+                        documentsList.appendChild(docElement);
+                    });
+                    documentsSection.classList.remove('hidden');
+                    documentsSection.classList.add('fade-in');
+                }
+            } catch (error) {
+                showError('An error occurred while processing your request. Please try again.');
+                console.error(error);
+            } finally {
+                loading.classList.add('hidden');
+            }
+        });
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
