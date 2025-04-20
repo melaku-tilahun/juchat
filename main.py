@@ -1,7 +1,6 @@
 import chromadb
 import google.generativeai as genai
 import os
-from markdown_it import MarkdownIt
 import PyPDF2
 from docx import Document
 from chromadb.utils import embedding_functions
@@ -21,8 +20,7 @@ CHROMA_PATH = "chroma_db"
 DOCS_DIRECTORY = "./documents"
 CHUNK_SIZE = 1000
 CHUNK_OVERLAP = 50
-# Initalizing markdown parser
-md = MarkdownIt()
+
 # Initialize Gemini API
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel(MODEL_NAME)
@@ -137,6 +135,7 @@ Your goal is to provide clear, accurate, and easy-to-understand answers to user 
 Focus on promoting understanding of Polio and AFP, encouraging prevention through vaccination and hygiene, 
 correcting misinformation with facts, and responding with empathy and cultural sensitivity.
 Always use simple language while maintaining medical accuracy to help users take informed health actions.
+alwase use the following information in your answer: if not say i don't know.
     Context:
     {context}
     Query: {query}
@@ -166,7 +165,7 @@ async def rag_query_endpoint(request: QueryRequest):
             query=query,
             retrieved_documents=retrieved_docs,
             retrieved_metadatas=retrieved_metadatas,
-            response= md.parse(response)
+            response= response
         )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error processing query: {str(e)}")
