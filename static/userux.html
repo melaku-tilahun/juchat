@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <title>JU-AI Chatbot</title>
+    <script defer src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="userux.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-container">
+        <header class="top-bar">
+            <button class="new-chat-btn" onclick="startNewChat()" title="New Chat">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 5v14M5 12h14"/>
+                </svg>
+            </button>
+            <span class="header-title">Polio AFP AI Assistant</span>
+            <div class="right-buttons">
+                <div class="chat-history-dropdown">
+                    <button class="history-toggle" onclick="toggleHistoryDropdown()" title="Chat History">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 8v4l3 3"/>
+                            <path d="M3.05 11a9 9 0 1 1 .5 4m-.5 5v-5h5"/>
+                        </svg>
+                    </button>
+                    <div id="chatHistory" class="history-dropdown-content hidden"></div>
+                </div>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Toggle Theme">
+                    <svg id="theme-icon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+        <main class="main-content">
+            <div id="chatContainer" class="chat-container">
+                <h1 class="welcome-header">Welcome to Polio AFP AI Assistant!</h1>
+                <h5 class="welcome-header">What do you Want to Know about Polio?</h5>
+            </div>
+            <div class="input-container">
+                <div class="input-wrapper">
+                    <input type="text" id="queryInput" placeholder="Ask your question..." class="flex-grow">
+                    <button id="submitButton" class="submit-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="loading" class="hidden chat-loading">
+                <div class="dot"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <div id="errorMessage" class="hidden fixed bottom-20 left-1/2 transform -translate-x-1/2 bg-red-500/90 text-white px-4 py-2 rounded-lg shadow-lg"></div>
+        </main>
+    </div>
+    <script src="userux.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@4.0.0/marked.min.js"></script>
+</body>
+</html>
