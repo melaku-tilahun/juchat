@@ -7,3 +7,4 @@ python-docx
 sentence-transformers
 pycld2
 pydantic
+huggingface_hub[hf_xet]
