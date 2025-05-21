@@ -5,3 +5,5 @@ google-generativeai
 PyPDF2
 python-docx
 sentence-transformers
+pycld2
+pydantic
